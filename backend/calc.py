@@ -30,6 +30,10 @@ class Calc:
         "predicted_time_arrival": tds[8].text,
       }
       route = dict([(k, self.__remove_meta(v)) for k,v in route.items()])
+      for v in route:
+        if "line_description" == v: route[v] = re.sub("車種：.*$", "", route[v])
+        if "duration" == v: route[v] = re.sub("所要時間： ", "", route[v])
+        if "time" in v: route[v] = re.search("\d{1,2}:\d{1,2}", route[v]).group()
       routes.append(route)
 
     return {"routes": routes}
