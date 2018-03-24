@@ -5,12 +5,12 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-  return "Hello, world"
+    return "Hello, world"
 
 @app.route("/result/<string:from_stop>/<string:to_stop>")
 def result(from_stop, to_stop):
-  res = Calc(from_stop, to_stop).getRes()
-  return jsonify(res)
+    res = Calc(from_stop, to_stop).getRes()
+    return jsonify(res)
 
 if __name__ == "__main__":
-  app.run()
+    app.run()
