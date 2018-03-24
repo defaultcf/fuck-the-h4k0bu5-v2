@@ -18,8 +18,13 @@ class Result:
         self.from_stop = from_stop
         self.to_stop = to_stop
 
-    def __remove_meta(self, str):
-        return re.sub("[\r\n\t\xa0]", "", str)
+    def __remove_meta(self, key, value):
+        value = re.sub("[\r\n\t\xa0]", "", value)
+        if "line_description" == key: value = re.sub("車種：.*$", "", value)
+        if "duration" == key: value = re.sub("^所要時間： ", "", value)
+        if "time" in key: value = re.sub("^(予定|発車|到着)(時刻|予測) ", "", value)
+        return value
+
 
     def get_res(self) -> dict:
         if not self.from_stop or not self.to_stop: return {}
@@ -40,11 +45,7 @@ class Result:
                 "predicted_time_departure": tds[11].text,
                 "predicted_time_arrival": tds[8].text,
             }
-            route = dict([(k, self.__remove_meta(v)) for k,v in route.items()])
-            for v in route:
-                if "line_description" == v: route[v] = re.sub("車種：.*$", "", route[v])
-                if "duration" == v: route[v] = re.sub("所要時間： ", "", route[v])
-                if "time" in v: route[v] = re.search("\d{1,2}:\d{1,2}", route[v]).group()
+            route = dict([(k, self.__remove_meta(k,v)) for k,v in route.items()])
             routes.append(route)
 
         return routes

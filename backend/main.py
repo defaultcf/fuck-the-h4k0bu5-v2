@@ -3,6 +3,12 @@ from calc import Search, Result
 
 app = Flask(__name__)
 
+@app.after_request
+def after_request(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Method", "GET")
+    return response
+
 @app.route("/")
 def index():
     return "Hello, world"
@@ -18,4 +24,4 @@ def result(from_stop, to_stop):
     return jsonify(res)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0")
