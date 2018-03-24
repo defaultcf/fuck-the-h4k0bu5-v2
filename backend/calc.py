@@ -1,8 +1,19 @@
 import requests
 from bs4 import BeautifulSoup
+import json
 import re
 
-class Calc:
+class Search:
+    def __init__(self, stop):
+        self.stop = stop
+
+    def get_res(self):
+        payload = {"term": self.stop, "language": "ja"}
+        r = requests.post("https://hakobus.bus-navigation.jp/wgsys/wgs/fromsearch.htm", data=payload)
+        return json.loads(r.text)
+
+
+class Result:
     def __init__(self, from_stop, to_stop):
         self.from_stop = from_stop
         self.to_stop = to_stop
@@ -10,7 +21,7 @@ class Calc:
     def __remove_meta(self, str):
         return re.sub("[\r\n\t\xa0]", "", str)
 
-    def getRes(self) -> dict:
+    def get_res(self) -> dict:
         if not self.from_stop or not self.to_stop: return {}
 
         payload = {"from": self.from_stop, "to": self.to_stop, "locale": "ja"}
@@ -36,4 +47,4 @@ class Calc:
                 if "time" in v: route[v] = re.search("\d{1,2}:\d{1,2}", route[v]).group()
             routes.append(route)
 
-        return {"routes": routes}
+        return routes
