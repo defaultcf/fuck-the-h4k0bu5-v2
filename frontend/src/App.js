@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { AutoComplete } from 'antd';
+import moment from 'moment';
+import "moment/locale/ja";
+import { AutoComplete, Row, Col } from 'antd';
 import RouteCard from './RouteCard';
 import './App.css';
 
@@ -38,6 +40,12 @@ class App extends Component {
       fetch(`http://localhost:5000/result/${this.state.departure}/${this.state.arrival}`)
       .then(res => res.json())
       .then(json => {
+        json = json.map(j => {
+          const departure = j.predicted_time_departure.split(":");
+          const departure_time = moment().hour(departure[0]).minute(departure[1]);
+          j["remaining"] = departure_time.fromNow();
+          return j;
+        });
         this.setState({routes: json})
       });
     }
@@ -67,11 +75,13 @@ class App extends Component {
           placeholder="到着地"
         />
 
-        <div id="routes">
+        <Row id="routes">
           {this.state.routes.map((route, key) => (
-            <RouteCard key={key} route={route} />
+            <Col key={key} sm={24} md={12}>
+              <RouteCard route={route} />
+            </Col>
           ))}
-        </div>
+        </Row>
       </div>
     );
   }

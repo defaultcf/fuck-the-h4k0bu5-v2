@@ -5,9 +5,8 @@ class RouteCard extends Component {
   render() {
     const { route } = this.props;
     return (
-      <Card title={route.line} extra={route.predicted_time_arrival}>
+      <Card title={route.line} extra={route.remaining}>
         <p>{route.line_description}</p>
-        <p>所要時間: {route.duration}</p>
       </Card>
     );
   }
