@@ -5,25 +5,35 @@ import { AutoComplete, Row, Col } from 'antd';
 import RouteCard from './RouteCard';
 import './App.css';
 
+const API_HOST = "https://test-68fc6.appspot.com";
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: [],
+      dataSourceDeparture: [],
+      dataSourceArrival: [],
       departure: "",
       arrival: "",
       routes: [],
     };
   }
 
-  handleSearch = value => {
-    if (value === "") this.setState({dataSource: []});
-    fetch(`http://localhost:5000/search/${value}`)
+  _setSource = (way, stops) => {
+    if (way === "departure") this.setState({dataSourceDeparture: stops});
+    else this.setState({dataSourceArrival: stops});
+  }
+
+  handleSearch = (way, value) => {
+    if (value === "") {
+      this._setSource(way, []);
+    }
+    fetch(`${API_HOST}/search/${value}`)
       .then(res => res.json())
       .then(json => {
         let stops = [];
         stops = json.map(j => j.stopName);
-        this.setState({dataSource: stops});
+        this._setSource(way, stops);
       });
   }
 
@@ -37,7 +47,7 @@ class App extends Component {
     await this._setStop(way, value);
 
     if (this.state.departure && this.state.arrival) {
-      fetch(`http://localhost:5000/result/${this.state.departure}/${this.state.arrival}`)
+      fetch(`${API_HOST}/result/${this.state.departure}/${this.state.arrival}`)
       .then(res => res.json())
       .then(json => {
         json = json.map(j => {
@@ -52,25 +62,30 @@ class App extends Component {
   }
 
   render() {
-    let searchTimer;
-    const searcher = value => {
-      clearTimeout(searchTimer)
-      searchTimer = setTimeout(this.handleSearch, 1000, value);
+    let searchTimerDeparture, searchTimerArrival;
+    const searcherDeparture = value => {
+      clearTimeout(searchTimerDeparture);
+      searchTimerDeparture = setTimeout(this.handleSearch, 1000, "departure", value);
+    }
+
+    const searcherArrival = value => {
+      clearTimeout(searchTimerArrival);
+      searchTimerArrival = setTimeout(this.handleSearch, 1000, "arrival", value);
     }
 
     return (
       <div>
         <AutoComplete id="departure"
-          dataSource={this.state.dataSource}
+          dataSource={this.state.dataSourceDeparture}
           style={{ width: 200 }}
-          onSearch={searcher}
+          onSearch={searcherDeparture}
           onSelect={this.handleSelect}
           placeholder="出発地"
         />
         <AutoComplete id="arrival"
-          dataSource={this.state.dataSource}
+          dataSource={this.state.dataSourceArrival}
           style={{ width: 200 }}
-          onSearch={searcher}
+          onSearch={searcherArrival}
           onSelect={this.handleSelect}
           placeholder="到着地"
         />
