@@ -10,6 +10,7 @@ const API_HOST = "https://test-68fc6.appspot.com";
 class App extends Component {
   constructor(props) {
     super(props);
+    this.resultTimer = null;
     this.state = {
       dataSourceDeparture: [],
       dataSourceArrival: [],
@@ -23,6 +24,9 @@ class App extends Component {
     const { params } = this.props.match;
     if (Object.keys(params).length === 2) {
       this._fetchResult(params.departure, params.arrival);
+      this.setState({departure: params.departure});
+      this.setState({arrival: params.arrival});
+      this.resultTimer = window.setInterval(this._fetchResult, 30000, params.departure, params.arrival);
     }
   }
 
@@ -32,6 +36,7 @@ class App extends Component {
   }
 
   handleSearch = (way, value) => {
+    window.clearInterval(this.resultTimer);
     if (value === "") {
       this._setSource(way, []);
     }
@@ -70,6 +75,8 @@ class App extends Component {
     if (this.state.departure && this.state.arrival) {
       this._fetchResult(this.state.departure, this.state.arrival);
       window.history.pushState(null, null, `/${this.state.departure}/${this.state.arrival}`);
+      window.clearInterval(this.resultTimer);
+      this.resultTimer = window.setInterval(this._fetchResult, 30000, this.state.departure, this.state.arrival);
     }
   }
 
@@ -77,13 +84,13 @@ class App extends Component {
     const { departure, arrival } = this.props.match.params;
     let searchTimerDeparture, searchTimerArrival;
     const searcherDeparture = value => {
-      clearTimeout(searchTimerDeparture);
-      searchTimerDeparture = setTimeout(this.handleSearch, 1000, "departure", value);
+      window.clearTimeout(searchTimerDeparture);
+      searchTimerDeparture = window.setTimeout(this.handleSearch, 1000, "departure", value);
     }
 
     const searcherArrival = value => {
-      clearTimeout(searchTimerArrival);
-      searchTimerArrival = setTimeout(this.handleSearch, 1000, "arrival", value);
+      window.clearTimeout(searchTimerArrival);
+      searchTimerArrival = window.setTimeout(this.handleSearch, 1000, "arrival", value);
     }
 
     return (
