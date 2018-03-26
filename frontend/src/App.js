@@ -19,6 +19,13 @@ class App extends Component {
     };
   }
 
+  componentDidMount() {
+    const { params } = this.props.match;
+    if (Object.keys(params).length === 2) {
+      this._fetchResult(params.departure, params.arrival);
+    }
+  }
+
   _setSource = (way, stops) => {
     if (way === "departure") this.setState({dataSourceDeparture: stops});
     else this.setState({dataSourceArrival: stops});
@@ -42,26 +49,32 @@ class App extends Component {
     else this.setState({arrival: value});
   }
 
+  _fetchResult = (departure, arrival) => {
+    fetch(`${API_HOST}/result/${departure}/${arrival}`)
+    .then(res => res.json())
+    .then(json => {
+      json = json.map(j => {
+        const departure = j.predicted_time_departure.split(":");
+        const departure_time = moment().hour(departure[0]).minute(departure[1]);
+        j["remaining"] = departure_time.fromNow();
+        return j;
+      });
+      this.setState({routes: json})
+    });
+  }
+
   handleSelect = async(value, prop) => {
     const way = prop._owner.memoizedProps.id;
     await this._setStop(way, value);
 
     if (this.state.departure && this.state.arrival) {
-      fetch(`${API_HOST}/result/${this.state.departure}/${this.state.arrival}`)
-      .then(res => res.json())
-      .then(json => {
-        json = json.map(j => {
-          const departure = j.predicted_time_departure.split(":");
-          const departure_time = moment().hour(departure[0]).minute(departure[1]);
-          j["remaining"] = departure_time.fromNow();
-          return j;
-        });
-        this.setState({routes: json})
-      });
+      this._fetchResult(this.state.departure, this.state.arrival);
+      window.history.pushState(null, null, `/${this.state.departure}/${this.state.arrival}`);
     }
   }
 
   render() {
+    const { departure, arrival } = this.props.match.params;
     let searchTimerDeparture, searchTimerArrival;
     const searcherDeparture = value => {
       clearTimeout(searchTimerDeparture);
@@ -76,6 +89,7 @@ class App extends Component {
     return (
       <div>
         <AutoComplete id="departure"
+          defaultValue={departure}
           dataSource={this.state.dataSourceDeparture}
           style={{ width: 200 }}
           onSearch={searcherDeparture}
@@ -83,6 +97,7 @@ class App extends Component {
           placeholder="出発地"
         />
         <AutoComplete id="arrival"
+          defaultValue={arrival}
           dataSource={this.state.dataSourceArrival}
           style={{ width: 200 }}
           onSearch={searcherArrival}
