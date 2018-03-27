@@ -42,8 +42,8 @@ class Result:
                 "duration": tds[4].text,
                 "estimated_time_departure": tds[7].text,
                 "estimated_time_arrival": tds[10].text,
-                "predicted_time_departure": tds[11].text,
-                "predicted_time_arrival": tds[8].text,
+                "predicted_time_departure": tds[8].text,
+                "predicted_time_arrival": tds[11].text,
             }
             route = dict([(k, self.__remove_meta(k,v)) for k,v in route.items()])
             routes.append(route)

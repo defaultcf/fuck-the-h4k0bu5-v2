@@ -10,6 +10,7 @@ const API_HOST = "https://test-68fc6.appspot.com";
 class App extends Component {
   constructor(props) {
     super(props);
+    this.resultTimer = null;
     this.state = {
       dataSourceDeparture: [],
       dataSourceArrival: [],
@@ -19,12 +20,23 @@ class App extends Component {
     };
   }
 
+  componentDidMount() {
+    const { params } = this.props.match;
+    if (Object.keys(params).length === 2) {
+      this._fetchResult(params.departure, params.arrival);
+      this.setState({departure: params.departure});
+      this.setState({arrival: params.arrival});
+      this.resultTimer = window.setInterval(this._fetchResult, 30000, params.departure, params.arrival);
+    }
+  }
+
   _setSource = (way, stops) => {
     if (way === "departure") this.setState({dataSourceDeparture: stops});
     else this.setState({dataSourceArrival: stops});
   }
 
   handleSearch = (way, value) => {
+    window.clearInterval(this.resultTimer);
     if (value === "") {
       this._setSource(way, []);
     }
@@ -42,40 +54,49 @@ class App extends Component {
     else this.setState({arrival: value});
   }
 
+  _fetchResult = (departure, arrival) => {
+    fetch(`${API_HOST}/result/${departure}/${arrival}`)
+    .then(res => res.json())
+    .then(json => {
+      json = json.map(j => {
+        const departure = j.predicted_time_departure.split(":");
+        const departure_time = moment().hour(departure[0]).minute(departure[1]);
+        j["remaining"] = departure_time.fromNow();
+        return j;
+      });
+      this.setState({routes: json})
+    });
+  }
+
   handleSelect = async(value, prop) => {
     const way = prop._owner.memoizedProps.id;
     await this._setStop(way, value);
 
     if (this.state.departure && this.state.arrival) {
-      fetch(`${API_HOST}/result/${this.state.departure}/${this.state.arrival}`)
-      .then(res => res.json())
-      .then(json => {
-        json = json.map(j => {
-          const departure = j.predicted_time_departure.split(":");
-          const departure_time = moment().hour(departure[0]).minute(departure[1]);
-          j["remaining"] = departure_time.fromNow();
-          return j;
-        });
-        this.setState({routes: json})
-      });
+      this._fetchResult(this.state.departure, this.state.arrival);
+      window.history.pushState(null, null, `/${this.state.departure}/${this.state.arrival}`);
+      window.clearInterval(this.resultTimer);
+      this.resultTimer = window.setInterval(this._fetchResult, 30000, this.state.departure, this.state.arrival);
     }
   }
 
   render() {
+    const { departure, arrival } = this.props.match.params;
     let searchTimerDeparture, searchTimerArrival;
     const searcherDeparture = value => {
-      clearTimeout(searchTimerDeparture);
-      searchTimerDeparture = setTimeout(this.handleSearch, 1000, "departure", value);
+      window.clearTimeout(searchTimerDeparture);
+      searchTimerDeparture = window.setTimeout(this.handleSearch, 1000, "departure", value);
     }
 
     const searcherArrival = value => {
-      clearTimeout(searchTimerArrival);
-      searchTimerArrival = setTimeout(this.handleSearch, 1000, "arrival", value);
+      window.clearTimeout(searchTimerArrival);
+      searchTimerArrival = window.setTimeout(this.handleSearch, 1000, "arrival", value);
     }
 
     return (
       <div>
         <AutoComplete id="departure"
+          defaultValue={departure}
           dataSource={this.state.dataSourceDeparture}
           style={{ width: 200 }}
           onSearch={searcherDeparture}
@@ -83,6 +104,7 @@ class App extends Component {
           placeholder="出発地"
         />
         <AutoComplete id="arrival"
+          defaultValue={arrival}
           dataSource={this.state.dataSourceArrival}
           style={{ width: 200 }}
           onSearch={searcherArrival}
