@@ -22,7 +22,11 @@ ReactDOM.render(
         </Menu>
       </Sider>
       <Layout>
-        <Header style={{ background: "#fff", padding: 0 }}>🖕Fuck the h4k0bu5🖕</Header>
+        <Header style={{ background: "#fff", padding: 0 }}>
+          <span role="img" aria-label="middle finger">🖕</span>
+          Fuck the h4k0bu5
+          <span role="img" aria-label="middle finger">🖕</span>
+        </Header>
         <Content style={{ margin: "24px 16px 0" }}>
           <div style={{ padding: 24, background: "#fff", minHeight: "calc(100vh - 157px)" }}>
             <Route exact path="/" component={App} />

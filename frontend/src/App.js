@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import "moment/locale/ja";
-import { AutoComplete, Row, Col } from 'antd';
+import { AutoComplete, Row, Col, Spin } from 'antd';
 import RouteCard from './RouteCard';
 import './App.css';
 
@@ -16,6 +16,7 @@ class App extends Component {
       dataSourceArrival: [],
       departure: "",
       arrival: "",
+      loading: false,
       routes: [],
     };
   }
@@ -55,6 +56,7 @@ class App extends Component {
   }
 
   _fetchResult = (departure, arrival) => {
+    this.setState({loading: true});
     fetch(`${API_HOST}/result/${departure}/${arrival}`)
     .then(res => res.json())
     .then(json => {
@@ -71,7 +73,8 @@ class App extends Component {
         return departure_time[0] > departure_time[1];
       });
       this.setState({routes: json})
-    });
+    })
+    .then(() => this.setState({loading: false}));
   }
 
   handleSelect = async(value, prop) => {
@@ -122,6 +125,10 @@ class App extends Component {
               placeholder="到着地"
             />
           </Col>
+        </Row>
+
+        <Row type="flex" justify="center">
+          <Spin spinning={this.state.loading} />
         </Row>
 
         <Row id="routes">
