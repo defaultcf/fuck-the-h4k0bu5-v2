@@ -1,5 +1,10 @@
 @import '~antd/dist/antd.css';
 
+.ant-select {
+  width: 100% !important;
+  padding: 5px;
+}
+
 .ant-card {
   margin: 10px;
 }

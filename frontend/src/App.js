@@ -101,22 +101,28 @@ class App extends Component {
 
     return (
       <div>
-        <AutoComplete id="departure"
-          defaultValue={departure}
-          dataSource={this.state.dataSourceDeparture}
-          style={{ width: 200 }}
-          onSearch={searcherDeparture}
-          onSelect={this.handleSelect}
-          placeholder="出発地"
-        />
-        <AutoComplete id="arrival"
-          defaultValue={arrival}
-          dataSource={this.state.dataSourceArrival}
-          style={{ width: 200 }}
-          onSearch={searcherArrival}
-          onSelect={this.handleSelect}
-          placeholder="到着地"
-        />
+        <Row>
+          <Col key={1} sm={24} md={12}>
+            <AutoComplete id="departure"
+              defaultValue={departure}
+              dataSource={this.state.dataSourceDeparture}
+              style={{ width: 200 }}
+              onSearch={searcherDeparture}
+              onSelect={this.handleSelect}
+              placeholder="出発地"
+            />
+          </Col>
+          <Col key={2} sm={24} md={12}>
+            <AutoComplete id="arrival"
+              defaultValue={arrival}
+              dataSource={this.state.dataSourceArrival}
+              style={{ width: 200 }}
+              onSearch={searcherArrival}
+              onSelect={this.handleSelect}
+              placeholder="到着地"
+            />
+          </Col>
+        </Row>
 
         <Row id="routes">
           {this.state.routes.map((route, key) => (
