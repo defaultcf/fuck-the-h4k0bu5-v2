@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import "moment/locale/ja";
-import { AutoComplete, Row, Col } from 'antd';
+import { AutoComplete, Row, Col, Spin } from 'antd';
 import RouteCard from './RouteCard';
 import './App.css';
 
@@ -16,6 +16,7 @@ class App extends Component {
       dataSourceArrival: [],
       departure: "",
       arrival: "",
+      loading: false,
       routes: [],
     };
   }
@@ -55,6 +56,7 @@ class App extends Component {
   }
 
   _fetchResult = (departure, arrival) => {
+    this.setState({loading: true});
     fetch(`${API_HOST}/result/${departure}/${arrival}`)
     .then(res => res.json())
     .then(json => {
@@ -63,9 +65,16 @@ class App extends Component {
         const departure_time = moment().hour(departure[0]).minute(departure[1]);
         j["remaining"] = departure_time.fromNow();
         return j;
+      }).sort((a, b) => {
+        const departure_time = [a, b].map(d => {
+          const departure = d.predicted_time_departure.split(":");
+          return moment().hour(departure[0]).minute(departure[1]);
+        });
+        return departure_time[0] > departure_time[1];
       });
       this.setState({routes: json})
-    });
+    })
+    .then(() => this.setState({loading: false}));
   }
 
   handleSelect = async(value, prop) => {
@@ -95,22 +104,32 @@ class App extends Component {
 
     return (
       <div>
-        <AutoComplete id="departure"
-          defaultValue={departure}
-          dataSource={this.state.dataSourceDeparture}
-          style={{ width: 200 }}
-          onSearch={searcherDeparture}
-          onSelect={this.handleSelect}
-          placeholder="出発地"
-        />
-        <AutoComplete id="arrival"
-          defaultValue={arrival}
-          dataSource={this.state.dataSourceArrival}
-          style={{ width: 200 }}
-          onSearch={searcherArrival}
-          onSelect={this.handleSelect}
-          placeholder="到着地"
-        />
+        <Row>
+          <Col key={1} sm={24} md={12}>
+            <AutoComplete id="departure"
+              defaultValue={departure}
+              dataSource={this.state.dataSourceDeparture}
+              style={{ width: 200 }}
+              onSearch={searcherDeparture}
+              onSelect={this.handleSelect}
+              placeholder="出発地"
+            />
+          </Col>
+          <Col key={2} sm={24} md={12}>
+            <AutoComplete id="arrival"
+              defaultValue={arrival}
+              dataSource={this.state.dataSourceArrival}
+              style={{ width: 200 }}
+              onSearch={searcherArrival}
+              onSelect={this.handleSelect}
+              placeholder="到着地"
+            />
+          </Col>
+        </Row>
+
+        <Row type="flex" justify="center">
+          <Spin spinning={this.state.loading} />
+        </Row>
 
         <Row id="routes">
           {this.state.routes.map((route, key) => (
