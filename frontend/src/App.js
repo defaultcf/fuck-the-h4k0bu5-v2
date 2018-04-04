@@ -64,11 +64,11 @@ class App extends Component {
         j["remaining"] = departure_time.fromNow();
         return j;
       }).sort((a, b) => {
-        const departure_a = a.predicted_time_departure.split(":");
-        const departure_b = b.predicted_time_departure.split(":");
-        const departure_time_a = moment().hour(departure_a[0]).minute(departure_a[1]);
-        const departure_time_b = moment().hour(departure_b[0]).minute(departure_b[1]);
-        return departure_time_a > departure_time_b;
+        const departure_time = [a, b].map(d => {
+          const departure = d.predicted_time_departure.split(":");
+          return moment().hour(departure[0]).minute(departure[1]);
+        });
+        return departure_time[0] > departure_time[1];
       });
       this.setState({routes: json})
     });
