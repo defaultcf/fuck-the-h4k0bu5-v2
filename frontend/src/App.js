@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import "moment/locale/ja";
-import { AutoComplete, Row, Col, Spin } from 'antd';
+import { AutoComplete, Row, Col, Alert, Spin } from 'antd';
 import RouteCard from './RouteCard';
 import './App.css';
 
@@ -104,6 +104,12 @@ class App extends Component {
 
     return (
       <div>
+        <Alert
+          message="停止中"
+          description="現在開発者の資金不足により、動作を停止しています（こんなクソプロジェクトに金を払う気が起きません）。Bitcoin: 1JfBh5yqgKJAbjidMngGqraXHjr73UBzdr"
+          type="info"
+          showIcon
+        />
         <Row>
           <Col key={1} sm={24} md={12}>
             <AutoComplete id="departure"
