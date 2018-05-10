@@ -35,9 +35,7 @@ ReactDOM.render(
       </Sider>
       <Layout>
         <Header style={{ background: "#fff", padding: 0 }}>
-          <span role="img" aria-label="middle finger">🖕</span>
-          Fuck the h4k0bu5
-          <span role="img" aria-label="middle finger">🖕</span>
+          h4k0bu5
         </Header>
         <Content style={{ margin: "24px 16px 0" }}>
           <div style={{ padding: 24, background: "#fff", minHeight: "calc(100vh - 157px)" }}>
