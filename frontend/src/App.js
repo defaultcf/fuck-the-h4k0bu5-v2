@@ -5,7 +5,7 @@ import { AutoComplete, Row, Col, Spin } from 'antd';
 import RouteCard from './RouteCard';
 import './App.css';
 
-const API_HOST = "https://fth.nikuja.ga";
+const API_HOST = "https://fth.babu.ml";
 
 class App extends Component {
   constructor(props) {

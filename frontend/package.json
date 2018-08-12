@@ -1,6 +1,7 @@
 {
   "name": "fuck-the-h4k0bu5-v2-front",
   "version": "0.1.0",
+  "homepage": "https://i544c/fuck-the-h4k0bu5-v2",
   "private": true,
   "dependencies": {
     "antd": "^3.3.1",
@@ -12,8 +13,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && rm build/static/*/*.map && cp .htaccess build/",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "gh-pages -d build"
+  },
+  "devDependencies": {
+    "gh-pages": "^1.2.0"
   }
 }
