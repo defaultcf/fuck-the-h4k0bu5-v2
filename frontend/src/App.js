@@ -83,7 +83,7 @@ class App extends Component {
 
     if (this.state.departure && this.state.arrival) {
       this._fetchResult(this.state.departure, this.state.arrival);
-      window.history.pushState(null, null, `/${this.state.departure}/${this.state.arrival}`);
+      window.history.pushState(null, null, `/fuck-the-h4k0bu5-v2/${this.state.departure}/${this.state.arrival}`);
       window.clearInterval(this.resultTimer);
       this.resultTimer = window.setInterval(this._fetchResult, 30000, this.state.departure, this.state.arrival);
     }

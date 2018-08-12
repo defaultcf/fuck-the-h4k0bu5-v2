@@ -18,7 +18,7 @@ const NotFound = () => (
 );
 
 ReactDOM.render(
-  <BrowserRouter>
+  <BrowserRouter basename={"/fuck-the-h4k0bu5-v2"}>
     <Layout>
       <Sider
         breakpoint="lg"
